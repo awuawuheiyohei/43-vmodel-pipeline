@@ -1,0 +1,40 @@
+# Argo CD Application（GitOps：监听 services/ 仓库，自动同步到 staging）
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: ai-llm-agent
+  namespace: argocd
+  annotations:
+    vmodel.req: "REQ-202"
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/awuawuheiyohei/vmodel-demo-service.git
+    targetRevision: HEAD
+    path: services/k8s
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: vmodel-staging
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+---
+# Argo CD AppProject（限制可部署命名空间）
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: vmodel
+  namespace: argocd
+spec:
+  description: "V Model Pipeline 演示服务"
+  sourceRepos:
+    - https://github.com/awuawuheiyohei/vmodel-demo-service.git
+  destinations:
+    - namespace: vmodel-staging
+      server: https://kubernetes.default.svc
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace

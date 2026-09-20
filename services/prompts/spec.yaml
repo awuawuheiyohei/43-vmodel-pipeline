@@ -1,0 +1,13 @@
+# Prompt 模板版本（REQ-004）
+versions:
+  v1:
+    description: "基础 system prompt"
+    template: "你是 AI 助手。请简洁回答用户问题。"
+
+  v2:
+    description: "礼貌 + 结构化输出（v1.1 升级）"
+    template: |
+      你是 AI 助手。请礼貌、简洁、结构化地回答用户问题。
+      输出格式：
+      - 1-2 句核心观点
+      - 必要时列出关键步骤

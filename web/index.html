@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>V Model Pipeline Lab — V 模型 × CI/CD 实时矩阵</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>🎯 V Model Pipeline Lab</h1>
+        <p class="subtitle">本地 k3d + Tekton + Argo CD + LLM 解读</p>
+        <p class="version">v0.1 PRD · 2026-09-20</p>
+    </header>
+
+    <nav class="tabs">
+        <button class="tab active" data-tab="matrix">📊 V × CI 矩阵</button>
+        <button class="tab" data-tab="trace">🔍 追溯详情</button>
+        <button class="tab" data-tab="meta">🧪 meta CI</button>
+        <button class="tab" data-tab="explain">🤖 AI 解读</button>
+    </nav>
+
+    <main>
+        <!-- V × CI 矩阵 -->
+        <section id="matrix" class="tab-content active">
+            <button id="refresh-matrix" class="btn-primary">🔄 刷新矩阵</button>
+            <div id="matrix-content">加载中...</div>
+        </section>
+
+        <!-- 追溯详情 -->
+        <section id="trace" class="tab-content">
+            <form id="trace-form">
+                <input type="text" id="trace-req-id" placeholder="REQ-XXX" required>
+                <button type="submit" class="btn-primary">查追溯</button>
+            </form>
+            <div id="trace-content"></div>
+        </section>
+
+        <!-- meta CI -->
+        <section id="meta" class="tab-content">
+            <h2>meta CI: pipeline 配置本身也是被测对象</h2>
+            <p>每次 Tekton PipelineRun 会先跑 meta-ci task，检查 tekton-pipeline.yaml 含全部 4 stage。</p>
+            <div id="meta-content">加载中...</div>
+        </section>
+
+        <!-- AI 解读 -->
+        <section id="explain" class="tab-content">
+            <button id="explain-all" class="btn-primary">🔍 解读当前所有失败</button>
+            <div id="explain-content"></div>
+        </section>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

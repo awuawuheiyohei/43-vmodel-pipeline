@@ -1,0 +1,83 @@
+service: ai-llm-agent
+version: "0.1.0"
+description: "AI/LLM Agent demo 服务（用于 V Model + CI/CD Pipeline 演示）"
+
+requirements:
+  # ──────────────────────────────────────────────────────────────
+  # V 模型左半边：需求 → 设计 → 实现
+  # ──────────────────────────────────────────────────────────────
+
+  - id: REQ-001
+    text: "支持 3 种 LLM 切换（OpenAI / DeepSeek / MiniMax）"
+    priority: high
+    v_phase: system_req
+    status: open
+
+  - id: REQ-002
+    text: "QPS ≥ 10（单实例 FastAPI + asyncio）"
+    priority: medium
+    v_phase: system_req
+    status: open
+
+  - id: REQ-003
+    text: "P99 延迟 ≤ 2s（含 LLM API 调用）"
+    priority: medium
+    v_phase: system_req
+    status: open
+
+  - id: REQ-004
+    text: "prompt 模板版本管理（YAML 文件 + 加载时校验）"
+    priority: high
+    v_phase: system_req
+    status: open
+
+  - id: REQ-005
+    text: "REST API: POST /v1/chat（OpenAI 兼容）+ GET /v1/health"
+    priority: high
+    v_phase: system_req
+    status: open
+
+  # ──────────────────────────────────────────────────────────────
+  # V 模型右半边：单元测试 → 集成测试 → 系统测试 → 验收测试
+  # （这些 REQ 对应测试覆盖度，不是新增需求）
+  # ──────────────────────────────────────────────────────────────
+
+  - id: REQ-101
+    text: "单元测试覆盖 prompt 加载 + LLM client 错误处理"
+    priority: high
+    v_phase: unit_test
+    status: open
+
+  - id: REQ-102
+    text: "集成测试覆盖 FastAPI 路由 + LLM mock"
+    priority: high
+    v_phase: integration_test
+    status: open
+
+  - id: REQ-103
+    text: "系统测试覆盖 k6 负载（QPS=10 + P99≤2s）"
+    priority: medium
+    v_phase: system_test
+    status: open
+
+  - id: REQ-104
+    text: "验收测试覆盖端到端 happy path（含真实 LLM）"
+    priority: high
+    v_phase: acceptance_test
+    status: open
+
+  # ──────────────────────────────────────────────────────────────
+  # meta CI：pipeline 配置本身也是被测对象
+  # ──────────────────────────────────────────────────────────────
+
+  - id: REQ-201
+    text: "Tekton PipelineRun YAML 必须含全部 4 stage"
+    priority: high
+    v_phase: meta_ci
+    status: open
+
+  - id: REQ-202
+    text: "Argo CD Application 必须监听 services/ 仓库变化"
+    priority: medium
+    v_phase: meta_ci
+    status: open

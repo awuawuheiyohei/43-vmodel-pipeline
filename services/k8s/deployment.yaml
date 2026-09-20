@@ -1,0 +1,47 @@
+# Demo 服务 K8s 部署（Argo CD 应用目标）
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ai-llm-agent
+  namespace: vmodel-staging
+  labels:
+    app: ai-llm-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ai-llm-agent
+  template:
+    metadata:
+      labels:
+        app: ai-llm-agent
+    spec:
+      containers:
+        - name: ai-llm-agent
+          image: ai-llm-agent-demo:0.1.0
+          ports:
+            - containerPort: 8000
+          env:
+            - name: LLM_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: llm-secrets
+                  key: api-key
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: 8000
+            initialDelaySeconds: 5
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ai-llm-agent
+  namespace: vmodel-staging
+spec:
+  selector:
+    app: ai-llm-agent
+  ports:
+    - port: 8000
+      targetPort: 8000

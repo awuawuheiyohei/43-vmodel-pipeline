@@ -1,0 +1,88 @@
+# Tekton Pipeline（4 stage + meta CI）
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: vmodel-pipeline
+  namespace: vmodel-pipeline
+  annotations:
+    vmodel.coverage: "REQ-101,REQ-102,REQ-103,REQ-104,REQ-201"
+spec:
+  description: "V Model Pipeline（unit → integration → system → acceptance + meta CI）"
+  params:
+    - name: repo-url
+      type: string
+    - name: target-url
+      type: string
+      default: "http://ai-llm-agent.vmodel-staging:8000"
+  workspaces:
+    - name: source
+  tasks:
+    # 1. meta CI 先跑（pipeline 配置自检）
+    - name: meta-ci
+      taskRef:
+        name: meta-ci
+      params:
+        - name: config-path
+          value: "k8s/tekton-pipeline.yaml"
+
+    # 2. 单元测试（V 模型左下 → 单元测试）
+    - name: unit-test
+      runAfter: [meta-ci]
+      taskRef:
+        name: unit-test
+      params:
+        - name: repo-url
+          value: $(params.repo-url)
+      workspaces:
+        - name: source
+          workspace: source
+
+    # 3. 集成测试（V 模型左中 → 集成测试）
+    - name: integration-test
+      runAfter: [unit-test]
+      taskRef:
+        name: integration-test
+      workspaces:
+        - name: source
+          workspace: source
+
+    # 4. 系统测试（V 模型右下 → 系统测试）
+    - name: system-test
+      runAfter: [integration-test]
+      taskRef:
+        name: system-test
+      params:
+        - name: target-url
+          value: $(params.target-url)
+
+    # 5. 验收测试（V 模型右下 → 验收测试）
+    - name: acceptance-test
+      runAfter: [system-test]
+      taskRef:
+        name: acceptance-test
+      params:
+        - name: target-url
+          value: $(params.target-url)
+      workspaces:
+        - name: source
+          workspace: source
+---
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  name: vmodel-pipelinerun-sample
+  namespace: vmodel-pipeline
+  labels:
+    tekton.dev/pipeline: vmodel-pipeline
+spec:
+  pipelineRef:
+    name: vmodel-pipeline
+  params:
+    - name: repo-url
+      value: "https://github.com/awuawuheiyohei/vmodel-demo-service.git"
+    - name: target-url
+      value: "http://ai-llm-agent.vmodel-staging:8000"
+  workspaces:
+    - name: source
+      persistentVolumeClaim:
+        claimName: vmodel-source-pvc

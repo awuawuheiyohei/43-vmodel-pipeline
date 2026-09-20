@@ -1,0 +1,40 @@
+# 集成测试用 docker-compose（起 postgres + redis）
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_PASSWORD: dev
+      POSTGRES_DB: ai_llm
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  ai-llm-agent:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      LLM_API_KEY: ${LLM_API_KEY:-dummy}
+      LLM_BASE_URL: ${LLM_BASE_URL:-https://api.MiniMax.chat/v1}
+      LLM_MODEL: ${LLM_MODEL:-MiniMax-M3}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
