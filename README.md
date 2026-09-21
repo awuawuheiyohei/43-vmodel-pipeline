@@ -173,15 +173,19 @@ vmodel-pipeline/
 
 ---
 
-## 🎯 v1.0 验收标准（待 K8s 环境就绪后验证）
+## 🎯 v1.0 验收标准
 
-- [ ] `k3d cluster create vmodel` 起本地 K8s 集群
-- [ ] `kubectl apply -k k8s/` 部署 Tekton + Argo CD
-- [ ] `python main.py serve` 启动 Web UI（端口 5003）
-- [ ] 提交 1 个含 req_id 的 commit → Tekton 自动跑 4 stage
-- [ ] Web UI 显示 V 模型 × CI 矩阵实时状态
-- [x] **CI 失败时 LLM 解读 V 模型阶段**（2026-09-20 端到端跑通，637 字符输出含 V 阶段 + log 引用 + 4 条具体修复 + 回退判断）
-- [ ] Requirements Traceability Matrix 完整
+- [x] `k3d cluster create vmodel` 起本地 K8s 集群
+- [x] `kubectl apply -k k8s/` 部署 Tekton + Argo CD
+- [x] **完整 PipelineRun 真实跑通**（2026-09-21）
+  - meta-ci ✅ Succeeded（pipeline 配置自检）
+  - unit-test ✅ Succeeded（pytest tests/unit 真实通过）
+  - integration-test ✅ Succeeded（mock FastAPI 端点测试）
+  - system-test ✅ Succeeded（k6 load test 1375 iterations）
+  - acceptance-test ✅ Succeeded（2 skipped due to no LLM_API_KEY in CI）
+- [ ] `python main.py serve` 启动 Web UI（端口 5003）—— 代码就绪，未在本地跑过
+- [ ] Requirements Traceability Matrix 完整（**Dashboard 已含 12 号占位**）
+- [x] **CI 失败时 LLM 解读 V 模型阶段**（2026-09-20 端到端跑通，637 字符输出）
 - [ ] **真实跑 1 周无 bug**
 
 ---

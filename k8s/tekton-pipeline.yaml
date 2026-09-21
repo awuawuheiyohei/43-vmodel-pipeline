@@ -11,6 +11,10 @@ spec:
   params:
     - name: repo-url
       type: string
+      description: "vmodel-pipeline 仓库 URL（pipeline 配置所在）"
+    - name: demo-repo-url
+      type: string
+      description: "demo 服务仓库 URL（vmodel-demo-service）"
     - name: target-url
       type: string
       default: "http://ai-llm-agent.vmodel-staging:8000"
@@ -22,6 +26,8 @@ spec:
       taskRef:
         name: meta-ci
       params:
+        - name: repo-url
+          value: $(params.repo-url)
         - name: config-path
           value: "k8s/tekton-pipeline.yaml"
 
@@ -31,8 +37,8 @@ spec:
       taskRef:
         name: unit-test
       params:
-        - name: repo-url
-          value: $(params.repo-url)
+        - name: demo-repo-url
+          value: $(params.demo-repo-url)
       workspaces:
         - name: source
           workspace: source
@@ -79,6 +85,8 @@ spec:
     name: vmodel-pipeline
   params:
     - name: repo-url
+      value: "https://github.com/awuawuheiyohei/vmodel-pipeline.git"
+    - name: demo-repo-url
       value: "https://github.com/awuawuheiyohei/vmodel-demo-service.git"
     - name: target-url
       value: "http://ai-llm-agent.vmodel-staging:8000"

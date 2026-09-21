@@ -10,20 +10,22 @@ metadata:
 spec:
   description: "单元测试（V 模型左下 → 单元测试）"
   params:
-    - name: repo-url
+    - name: demo-repo-url
       type: string
-      description: "demo 服务 git 仓库 URL"
+      description: "demo 服务 git 仓库 URL（vmodel-demo-service）"
   workspaces:
     - name: source
   steps:
     - name: checkout
-      image: alpine/git:v2.45
+      image: alpine/git:v2.54.0
       workingDir: $(workspaces.source.path)
       script: |
-        git clone $(params.repo-url) .
+        # 清空旧 workspace 内容（PVC 复用时需要）
+        rm -rf ./* ./.[!.]* 2>/dev/null || true
+        git clone $(params.demo-repo-url) .
     - name: pytest-unit
       image: python:3.11-slim
-      workingDir: $(workspaces.source.path)/services
+      workingDir: $(workspaces.source.path)
       script: |
         pip install -e . pytest pytest-asyncio
         pytest tests/unit -v --junitxml=results-unit.xml
@@ -41,23 +43,14 @@ spec:
   workspaces:
     - name: source
   steps:
-    - name: compose-up
-      image: docker/compose:1.29
-      workingDir: $(workspaces.source.path)/services
-      script: |
-        docker compose up -d postgres redis
-        sleep 10
     - name: pytest-integration
       image: python:3.11-slim
-      workingDir: $(workspaces.source.path)/services
+      workingDir: $(workspaces.source.path)
       script: |
+        # 集成测试用 mock（httpx.AsyncClient + AsyncMock），
+        # 不依赖真实 postgres/redis（在 K8s pod 里跑 docker daemon 不现实）
         pip install -e . pytest pytest-asyncio httpx
         pytest tests/integration -v --junitxml=results-integration.xml
-    - name: compose-down
-      image: docker/compose:1.29
-      workingDir: $(workspaces.source.path)/services
-      script: |
-        docker compose down
 ---
 apiVersion: tekton.dev/v1beta1
 kind: Task
@@ -106,7 +99,7 @@ spec:
   steps:
     - name: pytest-acceptance
       image: python:3.11-slim
-      workingDir: $(workspaces.source.path)/services
+      workingDir: $(workspaces.source.path)
       script: |
         pip install -e . pytest pytest-asyncio httpx
         export TARGET_URL=$(params.target-url)
@@ -123,15 +116,33 @@ metadata:
 spec:
   description: "meta CI：检查 pipeline YAML 本身是否含全部 4 stage（REQ-201）"
   params:
+    - name: repo-url
+      type: string
+      description: "vmodel-pipeline 仓库 URL（pipeline 配置所在）"
     - name: config-path
       type: string
       default: "k8s/tekton-pipeline.yaml"
-  workspaces:
-    - name: source
   steps:
+    - name: checkout-config
+      image: alpine/git:v2.54.0
+      script: |
+        git clone $(params.repo-url) /workspace
     - name: check-stages
       image: alpine:3.19
-      workingDir: $(workspaces.source.path)
+      workingDir: /workspace
+      script: |
+        #!/bin/sh
+        set -e
+        CONFIG=$(params.config-path)
+        echo "🔍 meta CI: 检查 $CONFIG"
+        for stage in unit-test integration-test system-test acceptance-test; do
+          if ! grep -q "$stage" "$CONFIG"; then
+            echo "❌ Missing stage: $stage"
+            exit 1
+          fi
+          echo "✅ Found: $stage"
+        done
+        echo "✅ meta CI: 全部 4 stage 都存在"
       script: |
         #!/bin/sh
         set -e
