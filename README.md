@@ -1,7 +1,24 @@
 # V Model + CI/CD Pipeline Lab
 
 > 本地 k3d + Tekton + Argo CD 跑 AI/LLM 服务的完整 V 模型开发流水线，每个 commit 都可追溯到 System Requirements。
-> **当前状态**：v0.1 PRD + 代码骨架完成（2026-09-20）。v1.0 真实跑通需要本地 K8s 环境（k3d + Docker daemon）。
+> **当前状态**：v1.0 PipelineRun 5 stage 真实跑通（meta-ci ✅ + unit ✅ + integration ✅ + system ✅ + acceptance ✅）
+
+---
+
+## 🎯 面试引用
+
+本项目是 **Apple IdMS SRE 面试** STAR 故事 #3 的核心案例：
+
+> **STAR 故事 #3**：GenAI 在 SRE 运维的应用（创新）
+> 端到端跑通 5 stage CI/CD pipeline，LLM 解读 CI 失败的 V 模型阶段，对应"Apple IdMS 风格的告警工程 + runbook 辅助 + Post-Mortem 自动生成"。
+
+**完整 STAR 故事**：[awuawuheiyohei/Interview/docs/interview-prep/apple-idms-star-stories.md](https://github.com/awuawuheiyohei/Interview/blob/main/docs/interview-prep/apple-idms-star-stories.md)
+
+**关键证据**：
+- ✅ 5 stage PipelineRun 真实跑通（4m13s）
+- ✅ `v_explainer.py` 端到端跑过（637 字符输出含 V 阶段定位 + log 引用 + 修复建议）
+- ✅ k3d + Tekton + Argo CD 集群全栈本地能跑
+- ✅ 同样模式可推广到 Apple IdMS 的告警工程 / runbook / Post-Mortem 自动化
 
 ---
 
