@@ -85,7 +85,7 @@ spec:
     name: vmodel-pipeline
   params:
     - name: repo-url
-      value: "https://github.com/awuawuheiyohei/vmodel-pipeline.git"
+      value: "https://github.com/awuawuheiyohei/43-vmodel-pipeline.git"
     - name: demo-repo-url
       value: "https://github.com/awuawuheiyohei/vmodel-demo-service.git"
     - name: target-url
