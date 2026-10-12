@@ -59,7 +59,7 @@ kubectl apply -n argocd --filename https://raw.githubusercontent.com/argoproj/ar
 ### 2. 应用 Pipeline 配置
 
 ```bash
-cd /Users/jiangwenrui/Downloads/mass/vmodel-pipeline
+cd /Users/jiangwenrui/Downloads/mass/43-vmodel-pipeline
 
 # 命名空间 + Tekton tasks + Pipeline + Argo CD
 kubectl apply -k k8s/

@@ -157,7 +157,7 @@ kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.pas
 ## 🚀 第七步：部署 vmodel-pipeline
 
 ```bash
-cd /Users/jiangwenrui/Downloads/mass/vmodel-pipeline
+cd /Users/jiangwenrui/Downloads/mass/43-vmodel-pipeline
 
 # 1. 创建项目 namespace
 kubectl create namespace vmodel-pipeline
@@ -185,7 +185,7 @@ kubectl get application -n argocd
 
 ```bash
 # 把 services/ 子目录初始化成 git 仓库
-cd /Users/jiangwenrui/Downloads/mass/vmodel-pipeline/services
+cd /Users/jiangwenrui/Downloads/mass/43-vmodel-pipeline/services
 git init
 git add .
 git commit -m "REQ-001,REQ-004,REQ-005: initial AI/LLM Agent demo"
@@ -199,7 +199,7 @@ git push -u origin main
 ### 2. 改 Tekton PipelineRun 用你的 repo URL
 
 ```bash
-cd /Users/jiangwenrui/Downloads/mass/vmodel-pipeline
+cd /Users/jiangwenrui/Downloads/mass/43-vmodel-pipeline
 # 编辑 k8s/tekton-pipeline.yaml 里 PipelineRun 的 repo-url 参数
 sed -i '' 's|https://github.com/awuawuheiyohei/vmodel-demo-service.git|YOUR_REPO_URL|' k8s/tekton-pipeline.yaml
 kubectl apply -f k8s/tekton-pipeline.yaml
@@ -224,7 +224,7 @@ kubectl logs -n vmodel-pipeline -l tekton.dev/taskRun=<taskrun-name>
 ## 🌐 第九步：起 vmodel-pipeline Web UI
 
 ```bash
-cd /Users/jiangwenrui/Downloads/mass/vmodel-pipeline
+cd /Users/jiangwenrui/Downloads/mass/43-vmodel-pipeline
 source .venv/bin/activate
 
 # 同步 K8s CI 状态 → SQLite
